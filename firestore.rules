@@ -1,0 +1,24 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Public portfolio contact form:
+    // Visitors can create a message, but cannot read/update/delete messages.
+    match /portfolioMessages/{messageId} {
+      allow create: if
+        request.resource.data.name is string &&
+        request.resource.data.name.size() >= 2 &&
+        request.resource.data.name.size() <= 80 &&
+        request.resource.data.email is string &&
+        request.resource.data.email.size() >= 5 &&
+        request.resource.data.email.size() <= 120 &&
+        request.resource.data.message is string &&
+        request.resource.data.message.size() >= 2 &&
+        request.resource.data.message.size() <= 2000 &&
+        request.resource.data.source == "portfolio";
+
+      allow read, update, delete: if false;
+    }
+  }
+}
